@@ -1,0 +1,18 @@
+Package: rankLME
+Title: Rank-based Estimation of Linear Mixed Effects Models
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Barbara",
+           family = "Brune",
+           role = c("aut", "cre"),
+           email = "barbara.brune@applied-statistics.at"
+           )
+Description: This R-package fits a linear mixed effects model with random slopes using a rank-based norm.
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    ggplot2, 
+    robustbase
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.2
