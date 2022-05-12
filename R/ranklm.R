@@ -18,10 +18,11 @@
 ranklm <- function(X, y, intercept = TRUE, 
                    weighted = FALSE,
                    leverage_columns = 1:ncol(X),
-                   V = NULL, 
+                   V = NULL, weights = NULL,
                    c = qchisq(0.95, df = ncol(X)),
                    mean_function = "hodges_lehmann",
                    mean_function_arguments = list(),
+                   mcd = TRUE,
                    ...) {
   
   # If intercept is contained in X, remove it
@@ -40,12 +41,24 @@ ranklm <- function(X, y, intercept = TRUE,
     
     X_lev <- X[, leverage_columns, drop = FALSE]
     
-    if (is.null(V)) { V <- robustbase::covMcd(X_lev) }
-    
-    weights <- sapply(1:nrow(X_lev), function(i) {
-      min(1, c / crossprod(X_lev[i, ] - V$center, matpow(V$cov, -1) %*% (X_lev[i, ] - V$center)))
-    })
-    
+    if (is.null(weights) & !is.null(V)) {
+      weights <- sapply(1:nrow(X_lev), function(i) {
+        min(1, c / crossprod(X_lev[i, ] - V$center, matpow(V$cov, -1) %*% (X_lev[i, ] - V$center)))
+      })
+      
+    } else if (is.null(V) & is.null(weights)) { 
+      
+      if (mcd) {
+        V <- robustbase::covMcd(X_lev) 
+      } else {
+        V = list(cov = cov(X_lev), center = colMeans(X_lev))
+      }
+      
+      weights <- sapply(1:nrow(X_lev), function(i) {
+        min(1, c / crossprod(X_lev[i, ] - V$center, matpow(V$cov, -1) %*% (X_lev[i, ] - V$center)))
+      })
+    }
+      
   } else {
       weights <- rep(1, nrow(X))
     }

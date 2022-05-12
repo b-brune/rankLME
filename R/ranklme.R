@@ -47,7 +47,8 @@ ranklme <- function(
     mean_function_arguments_fixed = list(),
     mean_function_arguments_random = list(), 
     sd_function_arguments_fixed = list(),
-    sd_function_arguments_random = list())
+    sd_function_arguments_random = list()),
+  mcd = TRUE
   ) {
   
   stopifnot(
@@ -123,6 +124,7 @@ ranklme <- function(
     b_hat <- matrix(apply(group_limits, 1, function(x) {
       do.call(mean_function, list(marg_residuals[x[1]:x[2]]))
     }), n.groups, k, byrow = TRUE)
+    
     
     # Correct the residuals for the random effect
     cond_residuals <- c(unlist(
@@ -286,6 +288,7 @@ ranklme <- function(
                 mean_function = mean_function,
                 mean_function_arguments = mean_function_arguments_fixed)
     
+    
     # Coefficients and predicted values
     beta_hat <- m$coef  
     y_hat <- { if (intercepts$fixed) { cbind(1, X) } else { X } } %*% beta_hat
@@ -295,19 +298,21 @@ ranklme <- function(
     # Calculate the residuals
     marg_residuals <- y - y_hat
     
+
     # Predict the random effects
-    groupwise_models <- apply(group_limits, 1, function(x) {
+    groupwise_models <- lapply(1:n.groups, function(i) {
+      x = group_limits[i, ]
       ranklm(y = marg_residuals[x[1]:x[2]], 
              X = Z[x[1]:x[2], , drop = FALSE], 
-             intercept = intercepts$random, 
-             weighted = weight_re, 
+             intercept = intercepts$random,  
+             weighted = weight_re, mcd=mcd,
              mean_function = mean_function,
              mean_function_arguments = mean_function_arguments_random)
     })
     
     b_hat <- matrix(unlist(lapply(groupwise_models, "[[", "coef")), n.groups, k, byrow = TRUE)
     
-    groupwise_leverage_weights <- unlist(lapply(groupwise_models, "[[", "weights"))
+    groupwise_leverage_weights <- lapply(groupwise_models, "[[", "weights")
     
     
     # Calculate the residuals
@@ -400,17 +405,19 @@ ranklme <- function(
         
       }
       
-      groupwise_models <- apply(group_limits, 1, function(x) {
+      groupwise_models <- lapply(1:n.groups, function(i) {
+        x = group_limits[i, ]
         ranklm(y = marg_residuals[x[1]:x[2]], 
                X = Z[x[1]:x[2], , drop = FALSE], 
-               intercept = intercepts$random, 
-               weighted = weight_re, 
-               mean_function = mean_function,
+               intercept = intercepts$random,  
+               weighted = weight_re, weights = groupwise_leverage_weights[[i]],
+               mean_function = mean_function, mcd = mcd,
                mean_function_arguments = mean_function_arguments_random)
       })
       
+      
       b_hat <- matrix(unlist(lapply(groupwise_models, "[[", "coef")), n.groups, k, byrow = TRUE)
-      groupwise_leverage_weights <- unlist(lapply(groupwise_models, "[[", "weights"))
+      # groupwise_leverage_weights <- unlist(lapply(groupwise_models, "[[", "weights"))
       
       
       cond_residuals <- c(unlist(apply(cbind(group_limits, b_hat), 1, function(x) {
@@ -488,28 +495,41 @@ ranklme <- function(
   
   # Groupwise leverage based on Z-matrix:
   
-  lev_groups <- c(tryCatch(unlist(apply(group_limits, 1, function(x) {
-    V <- robustbase::covMcd(Z[x[1]:x[2], , drop = FALSE])
+  lev_groups <- unlist(apply(group_limits, 1, function(x) {
     
-    sapply(1:nrow(Z[x[1]:x[2], , drop = FALSE]), function(i) {
-      crossprod(Z[x[1]:x[2], , drop = FALSE][i, ] - V$center, matpow(V$cov, -1) %*% 
-                  (Z[x[1]:x[2], , drop = FALSE][i, ] - V$center))
+    Z_tmp = Z[x[1]:x[2], , drop = FALSE]
+    
+    if (mcd) {
+      V <- robustbase::covMcd(Z_tmp)
+    } else {
+      V <- list(cov = cov(Z_tmp), center = colMeans(Z_tmp))
+    }
+    
+    sapply(1:nrow(Z_tmp), function(i) {
+      crossprod(Z_tmp[i, ] - V$center, matpow(V$cov, -1) %*% 
+                  (Z_tmp[i, ] - V$center))
     })
-  })), error = function(e) NA))
+    
+  }))
   
 
   # Scores in groups: Die sind ein bisschen doof zu berechnen...
-  groupwise_models <- apply(group_limits, 1, function(x) {
-    ranklm(y = marg_residuals[x[1]:x[2]], 
-           X = Z[x[1]:x[2], , drop = FALSE], 
-           intercept = intercepts$random, 
-           weighted = weight_re, 
-           mean_function = mean_function
-    )
-  })
-  
   groupwise_scores <-  unlist(lapply(groupwise_models, "[[", 'final_scores'))
-  groupwise_weights <- unlist(lapply(groupwise_models, "[[", 'weights'))
+  
+  if (!weight_re) {
+    
+    groupwise_models <- apply(group_limits, 1, function(x) {
+      ranklm(y = marg_residuals[x[1]:x[2]],
+             X = Z[x[1]:x[2], , drop = FALSE],
+             intercept = intercepts$random,
+             weighted = TRUE, mcd = mcd,
+             mean_function = mean_function
+      )
+    })
+    groupwise_leverage_weights <- unlist(lapply(groupwise_models, "[[", 'weights'))
+    
+  }
+
   
   
   # Combine all diagnostic measures into one data frame:
@@ -526,7 +546,7 @@ ranklme <- function(
     overall_scores = a(order(marg_residuals)) ,
     groupwise_scores = groupwise_scores,
     overall_weights = weights, 
-    groupwise_weights = groupwise_weights,
+    groupwise_weights = groupwise_leverage_weights,
     outlyingness_weights = sapply(2 * sigma_hat / abs(cond_residuals), min, 1)
   )[order(ord), ]
   
