@@ -542,11 +542,11 @@ ranklme <- function(
     g = g,
     var_diagnostic = rep(groupwise_variance_diagnostic, group_sizes),
     overall_leverage = lev,
-    groupwise_leverage = lev_groups,
+    groupwise_leverage = c(lev_groups),
     overall_scores = a(order(marg_residuals)) ,
     groupwise_scores = groupwise_scores,
     overall_weights = weights, 
-    groupwise_weights = groupwise_leverage_weights,
+    groupwise_weights = unlist(groupwise_leverage_weights),
     outlyingness_weights = sapply(2 * sigma_hat / abs(cond_residuals), min, 1)
   )[order(ord), ]
   
