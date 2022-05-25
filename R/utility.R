@@ -9,7 +9,6 @@
 #' Implemented by Daniel Kapla
 #' (borrowed from my tvRRR package)
 #' 
-#' @export
 
 matpow <- function (A, pow, symmetric = FALSE, tol = 1e-07) {
   if (nrow(A) != ncol(A)) {
@@ -54,7 +53,6 @@ matpow <- function (A, pow, symmetric = FALSE, tol = 1e-07) {
 #' 
 #' Output:
 #' A numeric vector of the Wilcoxon scores
-#' @export
 
 a <- function(v) {
   
@@ -66,7 +64,6 @@ a <- function(v) {
 }
 
 #' Wilcox norm function
-#' @export
 wilcox_norm <- function(X, y, beta) {
   sum(a(order(y - X %*% beta)) * (y - X %*% beta))
 }
@@ -79,7 +76,6 @@ wilcox_norm <- function(X, y, beta) {
 #' y <- X %*% beta + rnorm(100)
 #' X[1:10, ] <- 50
 #' wilcox_norm_weighted(X, y, beta, weighted = TRUE)
-#' @export
 
 wilcox_norm_weighted <- function(X, y, beta, 
                                  weighted = TRUE, 
@@ -118,7 +114,6 @@ wilcox_norm_weighted <- function(X, y, beta,
 
 
 #' HL1 estimator (from robnptests)
-#' @export 
 hodges_lehmann <- function (x, na.rm = FALSE) {
   
   if (!na.rm & any(is.na(x))) {
@@ -136,7 +131,6 @@ hodges_lehmann <- function (x, na.rm = FALSE) {
 
 
 #' RLME dispvar
-#' @export
 dispvar <- function (x, p = 0) {
   
   n = length(x)
@@ -151,10 +145,9 @@ dispvar <- function (x, p = 0) {
 
 
 #' Qn-variance corrected
-#' @export 
 
 Qn_corrected <- function(x, p = 0, ...) {
   n <- length(x)
-  sqrt(n / (n - p)) * Qn(x, ...)
+  sqrt(n / (n - p)) * robustbase::Qn(x, ...)
 } 
 

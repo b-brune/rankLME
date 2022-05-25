@@ -1,21 +1,37 @@
 #' Fit the rank-based model
 #' 
 #' Input:
-#' @param X (n x p) matrix of regressors, X does not contain an intercept
+#' @param X (n x p) matrix of regressors
 #' @param y (n x 1) target
 #' @param Z (n x k) matrix with variables corresponding to random effects, usually a subset
-#'          of X; also no intercept
+#'          of X
 #' @param g (n x 1) vector of group matchings for the observations 
 #' @param maxit maximum number of iterations
 #' @param tol tolerance until convergence  
 #' @param intercepts a named list of length two with elements `fixed`  and `random`
 #'        indicate whether intercepts should be fitted or not
 #' @param adjust_re logical, indicates whether the random effects should be adjusted for the mean
+#' @param weighted logical, should leverage weights be used, defaults to FALSE
+#' @param weight_re logical, should leverage weights be used for the random slope matrix Z, defaults to `weighted
+#' @param use_outlyingness_weights logical, usage of outlyingness weights to prevent outliers from contaminating groups
+#' @param leverage_columns which columns of X should be used for the leverage weights (relevant in cases where we have
+#' random and fixed predictors)
 #' @param mean_function string, mean function that should be used for centering
 #' @param sd_function string, scale estimator that should be used for scaling 
+#' @param control_mean_sd list with possible arguments that are handed over to mean and sd function (e.g. cutoff values
+#' for robust estimators)
+#' @param mcd should the MCD estimator be used to calculate leverage? defaults to TRUE, but can be set to FALSE if 
+#' the groups are too small to apply MCD
 #' 
 #' @return 
-#' A named list with lots of elements.  
+#' A named list with elements
+#' * beta -- the estimated fixed effects
+#' * beta_init -- the initial value for the fixed effects
+#' * b -- the estimated random effects
+#' * sigma -- the estimated standard deviations
+#' * theta -- the estimated random effects standard deviations
+#' * diagnostics -- a data frame with different diagnostic measures, fitted values and residuals
+#' * some more elements 
 #' 
 #' @export  
 #' 

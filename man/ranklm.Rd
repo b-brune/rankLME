@@ -9,10 +9,13 @@ ranklm(
   y,
   intercept = TRUE,
   weighted = FALSE,
+  leverage_columns = 1:ncol(X),
   V = NULL,
+  weights = NULL,
   c = qchisq(0.95, df = ncol(X)),
   mean_function = "hodges_lehmann",
   mean_function_arguments = list(),
+  mcd = TRUE,
   ...
 )
 }
