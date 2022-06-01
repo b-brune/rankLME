@@ -1,10 +1,12 @@
-#' Fit the rank-based model
+#' Rank-based fit for mixed effects models
 #' 
-#' Input:
-#' @param X (n x p) matrix of regressors
+#' @description 
+#' Fits the rank-based mixed effects model as proposed in Brune, Ortner and Filzmoser (2022+).
+#' 
+#' @param X (n x p) matrix of regressors, oredered by groups
 #' @param y (n x 1) target
 #' @param Z (n x k) matrix with variables corresponding to random effects, usually a subset
-#'          of X
+#'          of X; subsetting columns should correspond to the first k columns of Z
 #' @param g (n x 1) vector of group matchings for the observations 
 #' @param maxit maximum number of iterations
 #' @param tol tolerance until convergence  
@@ -25,12 +27,12 @@
 #' 
 #' @return 
 #' A named list with elements
-#' * beta -- the estimated fixed effects
-#' * beta_init -- the initial value for the fixed effects
-#' * b -- the estimated random effects
-#' * sigma -- the estimated standard deviations
-#' * theta -- the estimated random effects standard deviations
-#' * diagnostics -- a data frame with different diagnostic measures, fitted values and residuals
+#' * `beta` -- the estimated fixed effects
+#' * `beta_init` -- the initial value for the fixed effects
+#' * `b` -- the estimated random effects
+#' * `sigma` -- the estimated standard deviations
+#' * `theta` -- the estimated random effects standard deviations
+#' * `diagnostics` -- a data frame with different diagnostic measures, fitted values and residuals
 #' * some more elements 
 #' 
 #' @export  
@@ -536,7 +538,6 @@ ranklme <- function(
   }
 
   
-  
   # Combine all diagnostic measures into one data frame:
   results_and_diagnostics <- data.frame(
     y = y,
@@ -556,7 +557,6 @@ ranklme <- function(
   )[order(ord), ]
   
 
-
   results <- list(
     beta = beta_hat,
     beta_init = beta_init,
@@ -566,11 +566,7 @@ ranklme <- function(
     iterations = l,
     diagnostics = results_and_diagnostics,
     weighted = weighted,
-    group_limits = group_limits,
-    X_matching = X_matching, 
-    b_means = { if (exists("b_means")) b_means else NA }
-    # fitted = as.matrix(fitted[fitted$g == g_old, ][, 1]),
-    # residuals = as.matrix(as.matrix(residuals[residuals$g == g_old, ][, 1]))
+    group_limits = group_limits
   )
   
   class(results) <- "rankLME"
