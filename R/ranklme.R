@@ -37,17 +37,6 @@
 #' 
 #' 
 
-# mean_function = "hodges_lehmann"
-# mean_function_arguments_fixed = list()
-# mean_function_arguments_random = list()
-# sd_function = "Qn_corrected"
-# sd_function_arguments_fixed = list()
-# sd_function_arguments_random = list()
-# use_outlyingness_weights = TRUE
-# weighted=TRUE; weighted_re=TRUE; adjust_re=TRUE; tol=1e-4; maxit=10
-
-
-
 ranklme <- function(
   X, y, Z, g, 
   maxit = 10,

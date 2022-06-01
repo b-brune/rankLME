@@ -6,9 +6,9 @@
 #' @param X regression matrix
 #' @param y target
 #' @param intercept logical, indicates whether an intercept should be modeled
-#' @param boot logical, indicates whether the bootstrap distribution should be
-#'             calculated
-#' @param n.boot number of bootstrap replications
+#' @param weighted logical, should leverage weights be applied
+#' @param leverage_columns indicates the columns of X that should be used for calculation
+#' of the leverage weights (ignored if weighted = FALSE)
 #' @param ... additional arguments that may be passed to the norm
 #'
 #' @return The vector of coefficients
@@ -98,7 +98,10 @@ ranklm <- function(X, y, intercept = TRUE,
   
   
     
-  return(list(coef = coef, final_scores = final_scores, 
-              weights = weights))
-    
+  return(list(
+    coef = coef, 
+    final_scores = final_scores, 
+    weights = weights)
+    )
+  
 }
