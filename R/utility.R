@@ -70,7 +70,7 @@ wilcox_norm <- function(X, y, beta) {
 
 #' Weighted Wilcoxon norm, following 2004 Paper by McKean
 #'
-#' @example 
+#' @examples
 #' X <- replicate(4, rnorm(100))
 #' beta <- c(1, 2, 3, 4)
 #' y <- X %*% beta + rnorm(100)
