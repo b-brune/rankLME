@@ -40,23 +40,23 @@
 #' 
 
 ranklme <- function(
-  X, y, Z, g, 
-  maxit = 10,
-  tol = 1e-6,
-  intercepts = list(fixed = TRUE, random = TRUE),
-  adjust_re = TRUE,
-  weighted = FALSE,
-  weight_re = weighted,
-  use_outlyingness_weights = TRUE,
-  leverage_columns = 1:ncol(X), # -> WAS WILL ICH HIER üBERGEBEN?? 
-  mean_function = "hodges_lehmann", sd_function = "Qn_corrected",
-  control_mean_sd = list(
-    mean_function_arguments_fixed = list(),
-    mean_function_arguments_random = list(), 
-    sd_function_arguments_fixed = list(),
-    sd_function_arguments_random = list()),
-  mcd = TRUE
-  ) {
+    X, y, Z, g, 
+    maxit = 10,
+    tol = 1e-6,
+    intercepts = list(fixed = TRUE, random = TRUE),
+    adjust_re = TRUE,
+    weighted = FALSE,
+    weight_re = weighted,
+    use_outlyingness_weights = TRUE,
+    leverage_columns = 1:ncol(X), # -> WAS WILL ICH HIER üBERGEBEN?? 
+    mean_function = "hodges_lehmann", sd_function = "Qn_corrected",
+    control_mean_sd = list(
+      mean_function_arguments_fixed = list(),
+      mean_function_arguments_random = list(), 
+      sd_function_arguments_fixed = list(),
+      sd_function_arguments_random = list()),
+    mcd = TRUE
+) {
   
   stopifnot(
     "X, and Z need to be matrices" = { is.matrix(X) & is.matrix(Z) },
@@ -86,8 +86,8 @@ ranklme <- function(
   # Assign the control parameters! (Hier wäre vielleicht eine control function
   # cool, die alles was nicht übergeben wird auffüllt!)
   list2env(control_mean_sd, envir = environment())
-
-    
+  
+  
   #############################################################################
   #
   # Fit the model with random intercept:
@@ -117,7 +117,7 @@ ranklme <- function(
                 mean_function = mean_function,
                 mean_function_arguments = mean_function_arguments_fixed,
                 leverage_columns = leverage_columns
-                )
+    )
     
     # Extract coefficients, predicted values and weights (in case of weighting)
     beta_hat <- m$coef  
@@ -152,7 +152,7 @@ ranklme <- function(
       if (use_outlyingness_weights) {
         sapply(2 * sigma_hat / abs(cond_residuals), min, 1)
       } else { rep(1, n) } 
-      }
+    }
     
     l <- 1
     
@@ -184,7 +184,7 @@ ranklme <- function(
         weighted = weighted, 
         mean_function = mean_function,
         mean_function_arguments = mean_function_arguments_fixed
-        )
+      )
       
       # new_weights <- m$weights 
       
@@ -277,7 +277,7 @@ ranklme <- function(
     # Am besten wäre hier ein lookup table
     # DAS FUNKTIONIERT NICHT WENN WIR MEHRERE RANDOM EFFECTS MATCHEN WOLLEN. INSGESAMT IST DAS JA IRGENDWIE BLÖDSINN,
     # AM BESTEN WÄRE HIER ETWAS ZWEIDIMENSIONALES ODER?
-
+    
     if (intercepts$fixed & intercepts$random) X_matching <- c(TRUE, X_matching)
     ### !!!!!!!!!!!!!!!!!!!
     
@@ -285,7 +285,7 @@ ranklme <- function(
     n <- nrow(X)
     p <- ncol(X) + intercepts$fixed
     k <- ncol(Z) + intercepts$random
-
+    
     
     ### Fit iterative rank estimate
     
@@ -305,7 +305,7 @@ ranklme <- function(
     # Calculate the residuals
     marg_residuals <- y - y_hat
     
-
+    
     # Predict the random effects
     groupwise_models <- lapply(1:n.groups, function(i) {
       x = group_limits[i, ]
@@ -358,7 +358,7 @@ ranklme <- function(
         Sigma_b <- diag(theta_hat^2) 
       } else { Sigma_b <- theta_hat^2 * diag(1) }
       
-
+      
       for (i in 1:nrow(group_limits)) {
         
         Sigma_sq[group_limits[i, 1]:group_limits[i, 2], 
@@ -519,7 +519,7 @@ ranklme <- function(
     
   }))
   
-
+  
   # Scores in groups: Die sind ein bisschen doof zu berechnen...
   groupwise_scores <-  unlist(lapply(groupwise_models, "[[", 'final_scores'))
   
@@ -536,7 +536,7 @@ ranklme <- function(
     groupwise_leverage_weights <- unlist(lapply(groupwise_models, "[[", 'weights'))
     
   }
-
+  
   
   # Combine all diagnostic measures into one data frame:
   results_and_diagnostics <- data.frame(
@@ -556,7 +556,7 @@ ranklme <- function(
     outlyingness_weights = sapply(2 * sigma_hat / abs(cond_residuals), min, 1)
   )[order(ord), ]
   
-
+  
   results <- list(
     beta = beta_hat,
     beta_init = beta_init,
@@ -573,5 +573,3 @@ ranklme <- function(
   
   return(results)
 }
-
-
