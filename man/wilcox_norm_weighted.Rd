@@ -17,3 +17,10 @@ wilcox_norm_weighted(
 \description{
 Weighted Wilcoxon norm, following 2004 Paper by McKean
 }
+\examples{
+X <- replicate(4, rnorm(100))
+beta <- c(1, 2, 3, 4)
+y <- X \%*\% beta + rnorm(100)
+X[1:10, ] <- 50
+wilcox_norm_weighted(X, y, beta, weighted = TRUE)
+}

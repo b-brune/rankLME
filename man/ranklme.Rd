@@ -2,7 +2,7 @@
 % Please edit documentation in R/ranklme.R
 \name{ranklme}
 \alias{ranklme}
-\title{Rank-based fit for mixed effects models}
+\title{Fit the rank-based model}
 \usage{
 ranklme(
   X,
@@ -26,12 +26,12 @@ ranklme(
 )
 }
 \arguments{
-\item{X}{(n x p) matrix of regressors, oredered by groups}
+\item{X}{(n x p) matrix of regressors}
 
 \item{y}{(n x 1) target}
 
 \item{Z}{(n x k) matrix with variables corresponding to random effects, usually a subset
-of X; subsetting columns should correspond to the first k columns of Z}
+of X}
 
 \item{g}{(n x 1) vector of group matchings for the observations}
 
@@ -66,15 +66,15 @@ the groups are too small to apply MCD}
 \value{
 A named list with elements
 \itemize{
-\item \code{beta} -- the estimated fixed effects
-\item \code{beta_init} -- the initial value for the fixed effects
-\item \code{b} -- the estimated random effects
-\item \code{sigma} -- the estimated standard deviations
-\item \code{theta} -- the estimated random effects standard deviations
-\item \code{diagnostics} -- a data frame with different diagnostic measures, fitted values and residuals
+\item beta -- the estimated fixed effects
+\item beta_init -- the initial value for the fixed effects
+\item b -- the estimated random effects
+\item sigma -- the estimated standard deviations
+\item theta -- the estimated random effects standard deviations
+\item diagnostics -- a data frame with different diagnostic measures, fitted values and residuals
 \item some more elements
 }
 }
 \description{
-Fits the rank-based mixed effects model as proposed in Brune, Ortner and Filzmoser (2022+).
+Input:
 }
