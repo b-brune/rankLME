@@ -26,12 +26,12 @@ ranklm(
 
 \item{intercept}{logical, indicates whether an intercept should be modeled}
 
+\item{weighted}{logical, should leverage weights be applied}
+
+\item{leverage_columns}{indicates the columns of X that should be used for calculation
+of the leverage weights (ignored if weighted = FALSE)}
+
 \item{...}{additional arguments that may be passed to the norm}
-
-\item{boot}{logical, indicates whether the bootstrap distribution should be
-calculated}
-
-\item{n.boot}{number of bootstrap replications}
 }
 \value{
 The vector of coefficients
