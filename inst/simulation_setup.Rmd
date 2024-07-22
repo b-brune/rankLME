@@ -130,7 +130,7 @@ res |>
 
 The following code runs an exemplary simulation with multiplicative leverage outliers of different sizes. The number of replications within the for-loop can be adjusted for a larger scale simulation. The code may produce warnings since the standard REML method might run into numerical problems in the contaminated settings.
 
-The results of the analysis can also be loaded from `inst/results_leverage.Rdata`.
+The results of the analysis can also be loaded from `inst/results_leverage.RData`.
 
 ```{r, echo=false, warnings=false}
 # set.seed(141414)
@@ -141,7 +141,6 @@ The results of the analysis can also be loaded from `inst/results_leverage.Rdata
 #   sim_res[[run]] =  replicate(20, replicate_model_fits(outl_size, with_smdm=TRUE), simplify=FALSE)
 #   run <- run + 1
 # }
-
 ```
 ```{r}
 # results = do.call("rbind", lapply(sim_res, function(x) do.call("rbind", x)))
@@ -149,7 +148,7 @@ The results of the analysis can also be loaded from `inst/results_leverage.Rdata
 ```
 
 ```{r}
-load("results_leverage.Rdata")
+load("results_leverage.RData")
 ```
 
 
