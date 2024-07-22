@@ -1,5 +1,16 @@
 # Simulation helper functions
 
+#'
+#' Takes a data object (output from `raw_data()` or one of the contamination functions)
+#' and fits the models for the comparison (REML, SMDM, rank, weighted_rank)
+#' Input:
+#' @param d ... The dataset 
+#' @param with_smdm ... logical, should the SMDM model be fit as well? (Computationally expensive)
+#' 
+#' Output:
+#' A named list with the fitted models.
+#' 
+#' 
 compare_model_fits <- function(d, with_smdm=FALSE) {
   require(lme4)
   require(robustlmm)
@@ -71,7 +82,15 @@ compare_model_fits <- function(d, with_smdm=FALSE) {
 }
 
 
-
+#'
+#' Takes the fitted models (output from `compare_model_fits()` and extracts the coefficients).
+#' Input:
+#' @param fitted_object ... a list of models
+#' 
+#' Output:
+#' A data frame with the algorithms as columns, and names of the coefficients as rows.
+#' 
+#' 
 get_coefficients_from_model <- function(fitted_object) {
   lme = with(fitted_object, 
              list(beta = fixef(lme),
@@ -109,7 +128,15 @@ get_coefficients_from_model <- function(fitted_object) {
 }
 
 
-
+#'
+#' Takes the fitted models (output from `compare_model_fits()` and extracts the coefficients).
+#' Input:
+#' @param fitted_object ... a list of models
+#' 
+#' Output:
+#' A data frame with the algorithms as rows, and names of the coefficients as columns.
+#' 
+#' 
 get_coefficients_from_simulation <- function(fitted_object) {
   lme = unlist(with(fitted_object, 
                     list(beta = fixef(lme),
@@ -118,10 +145,9 @@ get_coefficients_from_simulation <- function(fitted_object) {
   ))
   
   if ("koller" %in% names(fitted_object)) {
-    smdm = unlist(with(fitted_object,
-                       list(beta = fixef(koller),
-                            variances = c(sigma(koller), unlist(lapply(VarCorr(koller), function(z) attr(z, "stddev")))))
-    )
+    smdm = with(fitted_object,
+                list(beta = fixef(koller),
+                     variances = c(sigma(koller), unlist(lapply(VarCorr(koller), function(z) attr(z, "stddev")))))
     )
   } else {
     smdm = NULL
@@ -175,6 +201,20 @@ get_coefficients_from_simulation <- function(fitted_object) {
 }
 
 
+
+#'
+#' Carries out one simulation run and returns the results as a dataframe.
+#' The data is contaminated with leverage outliers. The parameters within the
+#' function can be adjusted to test out other settings.
+#' 
+#' Input:
+#' @param outlier_size ... The desired outlier size
+#' @param with_smdm ... logical, should the SMDM model be fit as well? (Computationally expensive)
+#' 
+#' Output:
+#' A data frame with the algorithms as rows, and names of the coefficients as columns. (output of
+#' `get_coefficients_from_simulation()` function with an extra column for outlier_size.)
+#' 
 replicate_model_fits = function(outlier_size, with_smdm=FALSE) {
   
   d <- raw_data(
@@ -201,7 +241,7 @@ replicate_model_fits = function(outlier_size, with_smdm=FALSE) {
   )
   
   fitted = compare_model_fits(d_contaminated, with_smdm=with_smdm)
-    coefficients = get_coefficients_from_simulation(fitted) |> dplyr::mutate(outlier_size = outlier_size)
+  coefficients = get_coefficients_from_simulation(fitted) |> dplyr::mutate(outlier_size = outlier_size)
   
   return(coefficients)
 }
