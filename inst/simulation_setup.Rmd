@@ -6,7 +6,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, fig.width=10, fig.height=10)
 ```
 
 ```{r}
@@ -132,7 +132,7 @@ The following code runs an exemplary simulation with multiplicative leverage out
 
 The results of the analysis can also be loaded from `inst/results_leverage.RData`.
 
-```{r, echo=false, warnings=false}
+```{r}
 # set.seed(141414)
 # sim_res = vector("list", length=length(seq(1, 20, 1)))
 # run = 1
@@ -164,19 +164,22 @@ mses |>
   ggplot(aes(outlier_size, value, color=method)) +
   geom_line() + geom_point() +
   facet_wrap(name ~ ., scales="free") +
-  theme_minimal()
+  theme_minimal() +
+  ggtitle("MSE of estimated coefficients", 
+          subtitle="Multiplicative leverage outliers")
 ```
 
 
 ```{r}
-
 results |>
   tidyr::pivot_longer(-c(method, outlier_size)) |>
   ggplot(aes(outlier_size, value, color=method, group=interaction(method, outlier_size))) +
   geom_boxplot() +
   facet_wrap(name ~ ., scales="free") +
   theme_minimal() +
-  theme(legend.position="bottom")
+  theme(legend.position="bottom") +
+  ggtitle("Boxplots of estimated coefficients", 
+          subtitle="Multiplicative leverage outliers")
   
 ```
 
