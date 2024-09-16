@@ -4,7 +4,7 @@
 #' @export
 #'
 raw_data <- function(
-  n, p, k, n.groups, group_size, ranef_distribution = "normal",
+  n, p, k, n.groups, group_size, predictors = "gaussian", ranef_distribution = "normal",
   error_distribution = "normal", sd_b = 0.5, sd_eps = 1, sd_X = 2, 
   beta = rep(1, p), ...
 ) {
@@ -36,7 +36,12 @@ raw_data <- function(
   )
   
   # Draw X-matrix and define Z-matrix accordingly (without outliers)
-  X <- cbind(1, replicate(p - 1, rnorm(n, 0, sd = sd_X)))
+  if (predictors == "gaussian") {
+    X <- cbind(1, replicate(p - 1, rnorm(n, 0, sd = sd_X)))
+  } else if (predictors == "discrete") {
+    X <- cbind(1, replicate(p - 1, rpois(n, lambda = 3)))
+  }
+  
   Z <- X[, 1:k, drop = FALSE]
 
   Z_help <- as.matrix(Matrix::bdiag(

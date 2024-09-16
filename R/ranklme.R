@@ -527,7 +527,6 @@ ranklme <- function(
     
   }))
   
-  }
   
   
   # Scores in groups: Die sind ein bisschen doof zu berechnen...
@@ -550,11 +549,12 @@ ranklme <- function(
   # Calculate leverage based on hat matrix
   hii_X = diag(X_lev %*% solve(t(X_lev) %*% X_lev) %*% t(X_lev))
   
-  hii_Z <- c(apply(group_limits, 1, function(x) {
+  hii_Z <- unlist(apply(group_limits, 1, function(x) {
     Z_tmp = Z[x[1]:x[2], , drop = FALSE]
     return(diag(Z_tmp %*% solve(t(Z_tmp) %*% Z_tmp) %*% t(Z_tmp)))
   }, simplify=FALSE))
   
+  # print(hii_Z)
   
   # Combine all diagnostic measures into one data frame:
   results_and_diagnostics <- data.frame(

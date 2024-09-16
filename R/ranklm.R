@@ -68,7 +68,7 @@ ranklm <- function(X, y, intercept = TRUE,
       
       hat_matrix <- X_lev %*% solve(t(X_lev) %*% X_lev) %*% t(X_lev)
       
-      weights = pmin(1, (2  * ncol(X_lev) / nrow(X_lev)) / diag(hat_matrix(X_lev)))
+      weights = pmin(1, (2  * ncol(X_lev) / nrow(X_lev)) / diag(hat_matrix))
        
     }
     
