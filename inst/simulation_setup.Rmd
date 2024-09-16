@@ -39,6 +39,7 @@ d <- raw_data(
   k = 2, 
   n.groups = 20, 
   group_size = 10,
+  predictors = "discrete",
   ranef_distribution = "normal",
   error_distribution = "normal",
   sd_b = 0.5, 
@@ -148,7 +149,7 @@ The results of the analysis can also be loaded from `inst/results_leverage.RData
 ```
 
 ```{r}
-load("results_leverage.RData")
+load("../results_leverage_with_hat.RData")
 ```
 
 
@@ -172,7 +173,7 @@ mses |>
 
 ```{r}
 results |>
-  tidyr::pivot_longer(-c(method, outlier_size)) |>
+  tidyr::pivot_longer(-c(method, outlier_size)) |> 
   ggplot(aes(outlier_size, value, color=method, group=interaction(method, outlier_size))) +
   geom_boxplot() +
   facet_wrap(name ~ ., scales="free") +
@@ -182,4 +183,5 @@ results |>
           subtitle="Multiplicative leverage outliers")
   
 ```
+
 
