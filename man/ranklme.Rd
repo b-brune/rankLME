@@ -15,6 +15,7 @@ ranklme(
   adjust_re = TRUE,
   weighted = FALSE,
   weight_re = weighted,
+  weighting_type = "malahanobis",
   use_outlyingness_weights = TRUE,
   leverage_columns = 1:ncol(X),
   mean_function = "hodges_lehmann",
@@ -46,7 +47,9 @@ indicate whether intercepts should be fitted or not}
 
 \item{weighted}{logical, should leverage weights be used, defaults to FALSE}
 
-\item{weight_re}{logical, should leverage weights be used for the random slope matrix Z, defaults to `weighted}
+\item{weight_re}{logical, should leverage weights be used for the random slope matrix Z, defaults to \code{weighted}}
+
+\item{weighting_type}{string, specify the type of leverage weights used, either \code{malahanobis} or \code{hat_matrix}.}
 
 \item{use_outlyingness_weights}{logical, usage of outlyingness weights to prevent outliers from contaminating groups}
 

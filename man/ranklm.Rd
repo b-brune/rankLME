@@ -15,6 +15,7 @@ ranklm(
   c = qchisq(0.95, df = ncol(X)),
   mean_function = "hodges_lehmann",
   mean_function_arguments = list(),
+  weighting_type = "malahanobis",
   mcd = TRUE,
   ...
 )
@@ -30,6 +31,10 @@ ranklm(
 
 \item{leverage_columns}{indicates the columns of X that should be used for calculation
 of the leverage weights (ignored if weighted = FALSE)}
+
+\item{weighting_type}{Should malahanobis type weights be used or hat matrix based weights (\code{malahanobis} or \code{hat_matrix})}
+
+\item{mcd}{should MCD be used for covariance estimation or classic estimates (might be necessary for very small groups)}
 
 \item{...}{additional arguments that may be passed to the norm}
 }
