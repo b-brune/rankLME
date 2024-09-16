@@ -14,7 +14,8 @@
 #'        indicate whether intercepts should be fitted or not
 #' @param adjust_re logical, indicates whether the random effects should be adjusted for the mean
 #' @param weighted logical, should leverage weights be used, defaults to FALSE
-#' @param weight_re logical, should leverage weights be used for the random slope matrix Z, defaults to `weighted
+#' @param weight_re logical, should leverage weights be used for the random slope matrix Z, defaults to `weighted`
+#' @param weighting_type string, specify the type of leverage weights used, either `malahanobis` or `hat_matrix`.
 #' @param use_outlyingness_weights logical, usage of outlyingness weights to prevent outliers from contaminating groups
 #' @param leverage_columns which columns of X should be used for the leverage weights (relevant in cases where we have
 #' random and fixed predictors)
@@ -47,6 +48,7 @@ ranklme <- function(
     adjust_re = TRUE,
     weighted = FALSE,
     weight_re = weighted,
+    weighting_type = "malahanobis",
     use_outlyingness_weights = TRUE,
     leverage_columns = 1:ncol(X), # -> WAS WILL ICH HIER üBERGEBEN?? 
     mean_function = "hodges_lehmann", sd_function = "Qn_corrected",
@@ -114,6 +116,7 @@ ranklme <- function(
                 y = y, 
                 intercept = intercepts$fixed, 
                 weighted = weighted, 
+                weighting_type = weighting_type,
                 mean_function = mean_function,
                 mean_function_arguments = mean_function_arguments_fixed,
                 leverage_columns = leverage_columns
@@ -182,6 +185,7 @@ ranklme <- function(
         y = y_star, X = X_star, 
         intercept = intercepts$fixed, 
         weighted = weighted, 
+        weighting_type = weighting_type,
         mean_function = mean_function,
         mean_function_arguments = mean_function_arguments_fixed
       )
@@ -291,6 +295,7 @@ ranklme <- function(
     
     # Fit the first regression
     m <- ranklm(X = X, y = y, intercept = intercepts$fixed, weighted = weighted, 
+                weighting_type = weighting_type,
                 leverage_columns = leverage_columns,
                 mean_function = mean_function,
                 mean_function_arguments = mean_function_arguments_fixed)
@@ -312,7 +317,9 @@ ranklme <- function(
       ranklm(y = marg_residuals[x[1]:x[2]], 
              X = Z[x[1]:x[2], , drop = FALSE], 
              intercept = intercepts$random,  
-             weighted = weight_re, mcd=mcd,
+             weighted = weight_re, 
+             weighting_type = weighting_type,
+             mcd=mcd,
              mean_function = mean_function,
              mean_function_arguments = mean_function_arguments_random)
     })
@@ -391,6 +398,7 @@ ranklme <- function(
         X = X_star,
         intercept = FALSE, #intercepts$fixed, 
         weighted = weighted,
+        weighting_type = weighting_type,
         leverage_columns = leverage_columns,
         mean_function = mean_function,
         mean_function_arguments = mean_function_arguments_fixed)
@@ -519,6 +527,8 @@ ranklme <- function(
     
   }))
   
+  }
+  
   
   # Scores in groups: Die sind ein bisschen doof zu berechnen...
   groupwise_scores <-  unlist(lapply(groupwise_models, "[[", 'final_scores'))
@@ -537,6 +547,14 @@ ranklme <- function(
     
   }
   
+  # Calculate leverage based on hat matrix
+  hii_X = diag(X_lev %*% solve(t(X_lev) %*% X_lev) %*% t(X_lev))
+  
+  hii_Z <- c(apply(group_limits, 1, function(x) {
+    Z_tmp = Z[x[1]:x[2], , drop = FALSE]
+    return(diag(Z_tmp %*% solve(t(Z_tmp) %*% Z_tmp) %*% t(Z_tmp)))
+  }, simplify=FALSE))
+  
   
   # Combine all diagnostic measures into one data frame:
   results_and_diagnostics <- data.frame(
@@ -548,7 +566,9 @@ ranklme <- function(
     g = g,
     var_diagnostic = rep(groupwise_variance_diagnostic, group_sizes),
     overall_leverage = lev,
+    overall_hat = hii_X,
     groupwise_leverage = c(lev_groups),
+    groupwise_hat = hii_Z,
     overall_scores = a(order(marg_residuals)) ,
     groupwise_scores = groupwise_scores,
     overall_weights = weights, 
