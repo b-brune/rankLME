@@ -154,5 +154,5 @@ Qn_corrected <- function(x, p = 0, ...) {
 #' Univariate MCD estimator
 uniMCD <- function(x, p = 0, ...) {
   n = length(x)
-  sqrt(n / (n - p)) * robustbase::covMcd(x)$cov[1]
+  sqrt(n / (n - p) * robustbase::covMcd(x)$cov)[1]
 } 

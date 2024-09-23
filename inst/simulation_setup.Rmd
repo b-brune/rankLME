@@ -20,6 +20,7 @@ library(tidyr)
 
 set.seed(1212)
 ```
+
 ```{r}
 source("simulation_helpers.R")
 ```
@@ -39,7 +40,6 @@ d <- raw_data(
   k = 2, 
   n.groups = 20, 
   group_size = 10,
-  predictors = "discrete",
   ranef_distribution = "normal",
   error_distribution = "normal",
   sd_b = 0.5, 
