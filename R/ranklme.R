@@ -503,7 +503,7 @@ ranklme <- function(
   # Calculate leverage of the points:
   X_lev <- X[, leverage_columns, drop = FALSE]
   
-  V <- robustbase::covMcd(X_lev)
+  V <- suppressWarnings(robustbase::covMcd(X_lev))
   lev <- tryCatch(sapply(1:nrow(X_lev), function(i) {
     crossprod(X_lev[i, ] - V$center, matpow(V$cov, -1) %*% (X_lev[i, ] - V$center))
   }), error = function(e) NA)
