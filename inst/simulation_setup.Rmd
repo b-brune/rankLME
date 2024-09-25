@@ -135,12 +135,13 @@ The results of the analysis can also be loaded from `inst/results_leverage.RData
 
 ```{r}
 # set.seed(141414)
-# sim_res = vector("list", length=length(seq(1, 20, 1)))
+# sim_res = vector("list", length=length(seq(1, 20, 3)))
 # run = 1
 # 
-# for (outl_size in seq(1, 20, 1)) {
+# for (outl_size in seq(1, 20, 3)) {
 #   sim_res[[run]] =  replicate(20, replicate_model_fits(outl_size, with_smdm=TRUE), simplify=FALSE)
 #   run <- run + 1
+#   print(run)
 # }
 ```
 ```{r}
@@ -149,7 +150,7 @@ The results of the analysis can also be loaded from `inst/results_leverage.RData
 ```
 
 ```{r}
-load("../results_leverage_with_hat.RData")
+load("results_leverage_with_hat.RData")
 ```
 
 
@@ -167,7 +168,8 @@ mses |>
   facet_wrap(name ~ ., scales="free") +
   theme_minimal() +
   ggtitle("MSE of estimated coefficients", 
-          subtitle="Multiplicative leverage outliers")
+          subtitle="Multiplicative leverage outliers") 
+  
 ```
 
 
@@ -183,5 +185,6 @@ results |>
           subtitle="Multiplicative leverage outliers")
   
 ```
+
 
 
