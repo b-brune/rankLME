@@ -40,6 +40,8 @@ raw_data <- function(
     X <- cbind(1, replicate(p - 1, rnorm(n, 0, sd = sd_X)))
   } else if (predictors == "discrete") {
     X <- cbind(1, replicate(p - 1, rpois(n, lambda = 3)))
+  } else if (predictors == "mixed") {
+    X <- cbind(1, replicate(ceiling((p-1)/2), rnorm(n, 0, sd = sd_X)), replicate(floor((p-1)/2), rbinom(n, 1, prob=0.5)))
   }
   
   Z <- X[, 1:k, drop = FALSE]
