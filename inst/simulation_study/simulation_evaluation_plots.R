@@ -1,7 +1,9 @@
 library(glue)
 
+# Set path here:
 PATH_TO_SIMULATION_RESULTS = "../../../simulation_results_rankLME"
 
+# Set wd here:
 setwd("inst/simulation_study")
 
 source("setup_simulation_evaluation.R")
@@ -215,7 +217,7 @@ breakdown = preprocess_simulation_results(breakdown)
 gc() 
 
 
-
+# Breakdown point: Increasing proportion of outliers of size 100
 (
   breakdown %>% filter(n == 400) %>%
     filter(outlier_proportion %in% seq(0, 0.5, 0.05)) %>%
@@ -283,7 +285,7 @@ head(leverage)
 gc() 
 
 
-# Reaction to multiplicative leverage points of increasing size:
+# Reaction to multiplicative leverage points of increasing size (random)
 (leverage %>% filter(n == 400, outlier_proportion == 0.1, single_outlier_type == "random") %>%
     lineplot_mean(
       includelme = TRUE, 
@@ -300,13 +302,14 @@ gc()
       scales = "free", variables = "variances")) +
   plot_layout(guides = "collect", nrow = 2) 
 
+
+# Reaction to multiplicative leverage points of increasing size (sequential)
 (leverage %>% filter(n == 400, outlier_proportion == 0.1) %>%
     lineplot_mean(
       includelme = TRUE, 
       outlier_positioning = "sequential",
       additional_filters = "leverage_type == 'variance'",
       aggregation_function = "calc_mse", add_hline = FALSE, ylab = "MSE",
-      # title = "Outlier proportion: 0.10", 
       scales = "free", variables = "coefficients")) +
   (leverage %>% filter(n == 400, outlier_proportion == 0.1) %>%
      lineplot_mean(
@@ -314,12 +317,11 @@ gc()
        outlier_positioning = "sequential",
        additional_filters = "leverage_type == 'variance'",
        aggregation_function = "calc_mse", add_hline = FALSE, ylab = "MSE",
-       # title = "Outlier proportion: 0.10", 
        scales = "free", variables = "variances")) +
   plot_layout(guides = "collect", nrow = 2) 
 
 
-# Reaction to multiplicative y-outliers of increasing size:
+# Reaction to additive leverage points of increasing size:
 (leverage %>% filter(n == 400, outlier_proportion == 0.1) %>%
     lineplot_mean(
       includelme = TRUE, 
@@ -330,6 +332,26 @@ gc()
   (leverage %>% filter(n == 400, outlier_proportion == 0.1) %>%
      lineplot_mean(
        includelme = TRUE, 
+       additional_filters = "leverage_type == 'mean'",
+       aggregation_function = "calc_mse", add_hline = FALSE, ylab = "MSE",
+       # title = "Outlier proportion: 0.10", 
+       scales = "free", variables = "variances")) +
+  plot_layout(guides = "collect", nrow = 2) 
+
+
+# Reaction to additive leverage points of increasing size (sequential)
+(leverage %>% filter(n == 400, outlier_proportion == 0.1) %>%
+    lineplot_mean(
+      includelme = TRUE, 
+      outlier_positioning = "sequential",
+      additional_filters = "leverage_type == 'mean'",
+      aggregation_function = "calc_mse", add_hline = FALSE, ylab = "MSE",
+      # title = "Outlier proportion: 0.10", 
+      scales = "free", variables = "coefficients")) +
+  (leverage %>% filter(n == 400, outlier_proportion == 0.1) %>%
+     lineplot_mean(
+       includelme = TRUE, 
+       outlier_positioning = "sequential",
        additional_filters = "leverage_type == 'mean'",
        aggregation_function = "calc_mse", add_hline = FALSE, ylab = "MSE",
        # title = "Outlier proportion: 0.10", 
