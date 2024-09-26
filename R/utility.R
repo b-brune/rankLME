@@ -114,7 +114,7 @@ wilcox_norm_weighted <- function(X, y, beta,
 
 
 #' HL1 estimator (from robnptests)
-hodges_lehmann <- function (x, na.rm = FALSE) {
+hodges_lehmann <- function (x, const=1, na.rm = FALSE) {
   
   if (!na.rm & any(is.na(x))) {
     return(NA_real_)
@@ -125,7 +125,7 @@ hodges_lehmann <- function (x, na.rm = FALSE) {
   x.grid <- cbind(rep(seq_along(x), each = length(x)), seq_along(x))
   x.diffs <- x.grid[x.grid[, 1] < x.grid[, 2], , drop = FALSE]
   mean.pairwise.sums <- (x[x.diffs[, 1]] + x[x.diffs[, 2]])/2
-  return(stats::median(mean.pairwise.sums))
+  return(const * stats::median(mean.pairwise.sums))
 }
 
 
